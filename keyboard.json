@@ -1,0 +1,19 @@
+{
+  "inline": true,
+  "buttons": [
+    [{
+      "action": {
+        "type": "text",
+        "label": "Опубликовать сейчас"
+      },
+      "color": "positive"
+    },
+      {
+        "action": {
+          "type": "text",
+          "label": "Не опубликовывать"
+        },
+        "color": "negative"
+      }]
+  ]
+}
