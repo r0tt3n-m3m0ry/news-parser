@@ -41,16 +41,16 @@ vk = vk_bot.get_api()
 vk_posting = vk_api.VkApi(token=vk_token_posting)
 
 def post_parsed_news_vk(post):
-    vk_posting.method('wall.post', {'owner_id': group_id, 'from_group': 1, 'message': f'{post[0]}. Источник: {post[-1]}. Подробнее: {post[1]}. '})
+    vk_posting.method('wall.post', {'owner_id': vk_public_id, 'from_group': 1, 'message': f'{post[0]}. Источник: {post[-1]}. Подробнее: {post[1]}. '})
 
 def post_parsed_news_fb():
     return 1
 
 def send_message(message):
-    vk.messages.send(user_id=user_id_for_bot, random_id=random.randint(-999999999999, 999999999999), message=message)
+    vk.messages.send(user_id=vk_admin_id, random_id=random.randint(-999999999999, 999999999999), message=message)
 
 def send_message_with_keyboard(message):
-    vk.messages.send(user_id=user_id_for_bot, random_id=random.randint(-999999999999, 999999999999), message=message, keyboard=open('keyboard.json').read())
+    vk.messages.send(user_id=vk_admin_id, random_id=random.randint(-999999999999, 999999999999), message=message, keyboard=open('keyboard.json').read())
 
 def send_parsed_news(element):
     try:
