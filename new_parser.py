@@ -888,7 +888,6 @@ def parse_():
             title = 
             link = 
             parsed.append((title, link, ''))
-            , 'Новости Электросталь': 'inelstal', 'Восточный региональный телеканал': 'vrt', 'Восточный экспресс': 'tv360', 'Электросталь': 'electrostal'
 '''
 
 while True:
@@ -923,7 +922,7 @@ while True:
     random.shuffle(parsed)
 
     for element in parsed:
-        bot(parsed)
+        send_parsed_news(element)
         
     parsed, new_news = [], []
     
