@@ -17,7 +17,7 @@ import os
 
 delay = 900
 
-site_names = {'РИА': 'ria', 'Известия': 'iz', 'RussiaToday': 'rt', 'BBC': 'bbc', 'Вести': 'vesti', 'РБК': 'rbk', 'Коммерсант': 'komm'}
+site_names = {'РИА': 'ria', 'Известия': 'iz', 'RussiaToday': 'rt', 'BBC': 'bbc', 'Вести': 'vesti', 'РБК': 'rbk', 'Коммерсант': 'komm', 'Телерадиокомпания Зеленогорск': 'trkzelenogorsk', 'Сегодняшняя Газета': 'sgzt', 'ПО "Электрохимический завод"': 'ecp', 'Афонтово': 'afontovo', 'Красное знамя': 'krznamya', 'Glazov Life': 'glazovlife', 'ЧМЗ': 'chmz'}
 
 keywords = ['ядерный', 'атомный', 'твэл', 'росатом', 'атомная станция', 'атомное топливо', 'нейтрино', 'атомный реактор', 'атомный ледокол', 'атомная энергетика', 'ядерная установка', 'ядерные исследования', 'атомные источники тока', 'термоядерный синтез', 'вниинм', 'чмз', 'чепецкий механический завод', 'аэхк', 'ангарский электролизный химический комбинат', 'энергетика']
 
@@ -60,6 +60,10 @@ def send_parsed_news(element):
             if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
                 if event.text:
                     if event.from_user:
+                        if event.text == 'Дубликат':
+                            print(f'\n\n=====ДУБЛИКАТ=====\n\n{element}\n\n=====КОНЕЦ ДУБЛИКАТА=====')
+                            send_message('Новость не будет опубликована. Разработчик уведомлен.')
+                            return 0
                         if event.text == 'Не опубликовывать':
                             print(f'[{datetime.now().strftime("%H:%M:%S")}] [ОТВЕТ] {event.text}')
                             send_message('Новость не будет опубликована')
@@ -174,6 +178,7 @@ def parse_komm():
             if 'Главные новости к' not in title:
                 parsed.append((title, link, 'Коммерсант'))            
             
+# =====Electrostal_START=====
 def parse_inelstal():
     for keyword in keywords:
         try:
@@ -228,667 +233,89 @@ def parse_electrostal():
             title = element.text
             link = element['href']
             parsed.append((title, link, 'Электросталь'))
-'''
-def parse_innoginsk():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
+# =====Electrostal_END=====
 
-def parse_radio_mynoginsk():
-    for keyword in keywords:
+# =====Zelenogorsk_START=====
+def parse_trkzelenogorsk():
+    for keyword in keywords_zel_glazov:
         try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
+            trk = bs(requests.get(f'http://trkzelenogorsk.ru/news/itemlist/search?searchword={keyword}&categories=').text, 'html.parser')
         except: continue
-        news = iz.find_all('', {'': ''})
+        news = trk.find_all('h2', {'class': 'genericItemTitle'})
         for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
+            title = element.find('a').text.strip()
+            link = 'http://trkzelenogorsk.ru' + element.find('a', href=True)['href']
+            parsed.append((title, link, 'Телерадиокомпания Зеленогорск'))
             
-def parse_():
-    for keyword in keywords:
+def parse_sgzt():
+    for keyword in keywords_zel_glazov:
         try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
+            sgzt = bs(requests.get(f"http://sgzt.com/?search_rubric=&search_day_from={datetime.now().strftime('%d')}&search_month_from={datetime.now().strftime('%m')}&search_year_from={datetime.now().strftime('%Y')}&search_day_to={datetime.now().strftime('%d')}&search_month_to={datetime.now().strftime('%m')}&search_year_to={datetime.now().strftime('%Y')}&search_place=1&search_logic=1&query={keyword}&go.x=6&go.y=4&module=search").text, 'html.parser')
         except: continue
-        news = iz.find_all('', {'': ''})
+        news = sgzt.find_all('div', {'class': 'article-name'})
         for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
+            title = element.find('a').text
+            link = 'http://sgzt.com/' + element.find('a', href=True)['href']
+            parsed.append((title, link, 'Сегодняшняя газета'))
             
-def parse_():
-    for keyword in keywords:
+def parse_ecp():
+    for keyword in keywords_zel_glazov:
         try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
+            ecp = bs(requests.get(f'{keyword}').text, 'html.parser')
         except: continue
-        news = iz.find_all('', {'': ''})
+        news = ecp.find('div', {'class': 'content'}).find_all('a', href=True)
         for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
+            title = element.text.strip()
+            link = 'http://ecp.ru' + element['href']
+            parsed.append((title, link, 'ПО "Электрохимический завод"'))
             
-def parse_():
-    for keyword in keywords:
+def parse_afontovo():
+    for keyword in keywords_zel_glazov:
         try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
+            afontovo = bs(requests.get(f'http://afontovo.ru/search/?q={keyword}').text, 'html.parser')
         except: continue
-        news = iz.find_all('', {'': ''})
+        news = afontovo.find_all('a', {'class': 'article-item__link'}, href=True)
         for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
+            title = element.text
+            link = 'http://afontovo.ru' + element['href']
+            parsed.append((title, link, 'Афонтово'))
+# =====Zelenogorsk_END=====
+        
+# =====Glazov_START=====
+def parse_krznamya():
+    for keyword in keywords_zel_glazov:
+        try:
+            krznamya = bs(requests.get(f'http://kr-znamya.ru/index.php?searchword={keyword}&ordering=&searchphrase=all&Itemid=63&option=com_search').text, 'html.parser')
+        except: continue
+        news = krznamya.find_all('fieldset')
+        for element in news:
+            title = element.find('a').text.strip()
+            link = 'http//kr-znamya.ru:' + element.find('a', href=True)['href']
+            parsed.append((title, link, 'Красное знамя'))
 
-def parse_():
-    for keyword in keywords:
+def parse_glazovlife():
+    for keyword in keywords_zel_glazov:
         try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
+            glazovlife = bs(requests.get(f'http://glazovlife.ru/?s={keyword}').text, 'html.parser')
         except: continue
-        news = iz.find_all('', {'': ''})
+        news = glazovlife.find_all('h2', {'class': 'entry-title'})
         for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
+            title = element.find('a').text
+            link = element.find('a', href=True)['href']
+            parsed.append((title, link, 'Glazov Life'))
             
-def parse_():
-    for keyword in keywords:
+def parse_chmz():
+    for keyword in keywords_zel_glazov:
         try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
+            iz = bs(requests.get(f'http://chmz.net/search/index.php?q={keyword}').text, 'html.parser')
         except: continue
-        news = iz.find_all('', {'': ''})
+        news = iz.find_all('a', {'class': 'searchHead'}, href=True)
         for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
+            title = element.text.strip()
+            link = element['href']
+            parsed.append((title, link, 'ЧМЗ'))
             
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-            
-def parse_():
-    for keyword in keywords:
-        try:
-            iz = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = iz.find_all('', {'': ''})
-        for element in news:
-            title = 
-            link = 
-            parsed.append((title, link, ''))
-'''
+# =====Glazov_END=====
 
 while True:
     for site in site_names.values():
@@ -918,13 +345,15 @@ while True:
     
     ftp_upload()
     print(f'[{datetime.now().strftime("%H:%M:%S")}] [INFO] БД загружена на хостинг!')
+    
+    print(f'Уникальных новостей: {len(new_news)}')
 
-    random.shuffle(parsed)
+    random.shuffle(new_news)
 
-    for element in parsed:
-        send_parsed_news(element)
+    #for element in new_news:
+        #send_parsed_news(element)
         
     parsed, new_news = [], []
     
-    print(f'Ждём {DELAY} секунд, начиная с {datetime.now().strftime("%H:%M:%S")}')
-    time.sleep(DELAY)
+    #print(f'Ждём {delay} секунд, начиная с {datetime.now().strftime("%H:%M:%S")}')
+    #time.sleep(delay)
