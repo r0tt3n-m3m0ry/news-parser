@@ -345,16 +345,19 @@ while True:
 
     db.close()
     
-    ftp_upload()
-    print(f'[{datetime.now().strftime("%H:%M:%S")}] [INFO] БД загружена на хостинг!')
-    
-    print(f'Уникальных новостей: {len(new_news)}')
-
-    random.shuffle(new_news)
-
-    for element in new_news:
-        send_parsed_news(element)
+    if len(new_news) != 0:
+        print(f'Уникальных новостей: {len(new_news)}')
         
+        ftp_upload()
+        print(f'[{datetime.now().strftime("%H:%M:%S")}] [INFO] БД загружена на хостинг!')
+        
+        random.shuffle(new_news)
+
+        for element in new_news:
+            send_parsed_news(element)
+    else:
+        print('Нет уникальных новостей!')
+
     parsed, new_news = [], []
     
     print(f'Ждём {delay} секунд, начиная с {datetime.now().strftime("%H:%M:%S")}')
