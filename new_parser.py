@@ -55,7 +55,7 @@ def send_message_with_keyboard(message):
 def send_parsed_news(element):
     try:
         send_message_with_keyboard(f'Найдена новость: {element[0]}. Ссылка: {element[1]}. Источник: {element[2]}.')
-        print(f'[{datetime.now().strftime("%H:%M:%S")}] [INFO] Отправлена на модерацию новость:\n\n{element[0]}\n{element[1]}\n\nИсточник: {element[2]}')
+        print(f'\n[{datetime.now().strftime("%H:%M:%S")}] [INFO] Отправлена на модерацию новость:\n\n{element[0]}\n{element[1]}\n\nИсточник: {element[2]}')
         for event in longpoll.listen():
             if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
                 if event.text:
@@ -65,11 +65,11 @@ def send_parsed_news(element):
                             send_message('Новость не будет опубликована. Разработчик уведомлен.')
                             return 0
                         if event.text == 'Не опубликовывать':
-                            print(f'[{datetime.now().strftime("%H:%M:%S")}] [ОТВЕТ] {event.text}')
+                            print(f'\n[{datetime.now().strftime("%H:%M:%S")}] [ОТВЕТ] {event.text}')
                             send_message('Новость не будет опубликована')
                             return 0
                         elif event.text == 'Опубликовать сейчас':
-                            print(f'[{datetime.now().strftime("%H:%M:%S")}] [ОТВЕТ] {event.text}')
+                            print(f'\n[{datetime.now().strftime("%H:%M:%S")}] [ОТВЕТ] {event.text}')
                             try:
                                 post_parsed_news_vk(element)
                                 send_message('Новость опубликована в вк!')
@@ -320,11 +320,13 @@ def parse_chmz():
 # =====Glazov_END=====
 
 while True:
+    print(f'\n[{datetime.now().strftime("%H:%M:%S")}] [INFO] Парсинг начался')
+    
     for site in site_names.values():
         print(f'[{datetime.now().strftime("%H:%M:%S")}] [INFO] Парсим {site}')
         eval('parse_'+site)()
     
-    print(f'[{datetime.now().strftime("%H:%M:%S")}] [INFO] Найдено {len(parsed)} новостей!')
+    print(f'\n[{datetime.now().strftime("%H:%M:%S")}] [INFO] Найдено {len(parsed)} новостей!')
     
     db = sqlite3.connect('parser.db')
     sql = db.cursor()
@@ -346,10 +348,10 @@ while True:
     db.close()
     
     if len(new_news) != 0:
-        print(f'Уникальных новостей: {len(new_news)}')
+        print(f'\nУникальных новостей: {len(new_news)}')
         
         ftp_upload()
-        print(f'[{datetime.now().strftime("%H:%M:%S")}] [INFO] БД загружена на хостинг!')
+        print(f'\n[{datetime.now().strftime("%H:%M:%S")}] [INFO] БД загружена на хостинг!')
         
         random.shuffle(new_news)
 
@@ -360,5 +362,5 @@ while True:
 
     parsed, new_news = [], []
     
-    print(f'Ждём {delay} секунд, начиная с {datetime.now().strftime("%H:%M:%S")}')
+    print(f'\n[{datetime.now().strftime("%H:%M:%S")}] [INFO] Ждём {int(delay/60)} минут')
     time.sleep(delay)
