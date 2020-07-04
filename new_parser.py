@@ -299,10 +299,12 @@ def parse_glazovlife():
             glazovlife = bs(requests.get(f'http://glazovlife.ru/?s={keyword}').text, 'html.parser')
         except: continue
         news = glazovlife.find_all('h2', {'class': 'entry-title'})
-        for element in news:
-            title = element.find('a').text
-            link = element.find('a', href=True)['href']
-            parsed.append((title, link, 'Glazov Life'))
+        try:
+            for element in news:
+                title = element.text.strip()
+                link = element.find('a', href=True)['href']
+                parsed.append((title, link, 'Glazov Life'))
+        except: continue
             
 def parse_chmz():
     for keyword in keywords_zel_glazov:
@@ -350,10 +352,10 @@ while True:
 
     random.shuffle(new_news)
 
-    #for element in new_news:
-        #send_parsed_news(element)
+    for element in new_news:
+        send_parsed_news(element)
         
     parsed, new_news = [], []
     
-    #print(f'Ждём {delay} секунд, начиная с {datetime.now().strftime("%H:%M:%S")}')
-    #time.sleep(delay)
+    print(f'Ждём {delay} секунд, начиная с {datetime.now().strftime("%H:%M:%S")}')
+    time.sleep(delay)
