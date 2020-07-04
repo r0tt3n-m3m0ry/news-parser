@@ -7,11 +7,18 @@
         "label": "Опубликовать сейчас"
       },
       "color": "positive"
-    },
-      {
+    }],
+      [{
         "action": {
           "type": "text",
           "label": "Не опубликовывать"
+        },
+        "color": "negative"
+      },
+      {
+        "action": {
+          "type": "text",
+          "label": "Дубликат"
         },
         "color": "negative"
       }]
