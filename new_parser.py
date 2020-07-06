@@ -173,8 +173,8 @@ def parse_komm():
         except: continue
         news = komm.find_all('div', {'class': 'search_results_item'})
         for element in news:
-            title = element.find_all('a')[-2].text
-            link = element.find_all('a', href=True)[-1]['href']
+            title = element.find_all('a')[-2].text.strip()
+            link = 'http://kommersant.ru' + element.find_all('a', href=True)[-1]['href']
             if 'Главные новости к' not in title:
                 parsed.append((title, link, 'Коммерсант'))            
             
@@ -290,7 +290,7 @@ def parse_krznamya():
         news = krznamya.find_all('fieldset')
         for element in news:
             title = element.find('a').text.strip()
-            link = 'http//kr-znamya.ru:' + element.find('a', href=True)['href']
+            link = 'http//kr-znamya.ru' + element.find('a', href=True)['href']
             parsed.append((title, link, 'Красное знамя'))
 
 def parse_glazovlife():
