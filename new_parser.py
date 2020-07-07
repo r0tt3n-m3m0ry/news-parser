@@ -17,11 +17,12 @@ import os
 
 delay = 900
 
-site_names = {'РИА': 'ria', 'Известия': 'iz', 'RussiaToday': 'rt', 'BBC': 'bbc', 'Вести': 'vesti', 'РБК': 'rbk', 'Коммерсант': 'komm', 'Телерадиокомпания Зеленогорск': 'trkzelenogorsk', 'Сегодняшняя Газета': 'sgzt', 'ПО "Электрохимический завод"': 'ecp', 'Афонтово': 'afontovo', 'Красное знамя': 'krznamya', 'Glazov Life': 'glazovlife', 'ЧМЗ': 'chmz'}
+# 'РИА': 'ria', 'Известия': 'iz', 'RussiaToday': 'rt', 'BBC': 'bbc', 'Вести': 'vesti', 'РБК': 'rbk', 'Коммерсант': 'komm', 
+site_names = {'Телерадиокомпания Зеленогорск': 'trkzelenogorsk', 'Сегодняшняя газета': 'sgzt', 'ПО "Электрохимический завод"': 'ecp', 'Афонтово': 'afontovo', 'Красное знамя': 'krznamya', 'Glazov Life': 'glazovlife', 'ЧМЗ': 'chmz'}
 
 keywords = ['ядерный', 'атомный', 'твэл', 'росатом', 'атомная станция', 'атомное топливо', 'нейтрино', 'атомный реактор', 'атомный ледокол', 'атомная энергетика', 'ядерная установка', 'ядерные исследования', 'атомные источники тока', 'термоядерный синтез', 'вниинм', 'чмз', 'чепецкий механический завод', 'аэхк', 'ангарский электролизный химический комбинат', 'энергетика']
 
-keywords_zel_glazov= ['ТВЭЛ', 'Росатом', 'наука', 'энергия','Филимонов', 'цирконий', 'уран', 'кальций', 'сверхпроводниковая продукция', 'титан', 'Анищук']
+keywords_zel_glazov= ['ТВЭЛ', 'Росатом', 'наука', 'энергия','Филимонов', 'цирконий', 'уран', 'кальций', 'сверхпроводниковая продукция', 'титан', 'Анищук', 'Россия', 'лето', 'карнавал']
 
 parsed, new_news = [], []
 
@@ -250,7 +251,7 @@ def parse_trkzelenogorsk():
 def parse_sgzt():
     for keyword in keywords_zel_glazov:
         try:
-            sgzt = bs(requests.get(f"http://sgzt.com/?search_rubric=&search_day_from={datetime.now().strftime('%d')}&search_month_from={datetime.now().strftime('%m')}&search_year_from={datetime.now().strftime('%Y')}&search_day_to={datetime.now().strftime('%d')}&search_month_to={datetime.now().strftime('%m')}&search_year_to={datetime.now().strftime('%Y')}&search_place=1&search_logic=1&query={keyword}&go.x=6&go.y=4&module=search").text, 'html.parser')
+            sgzt = bs(requests.get(f"http://sgzt.com/?search_rubric=&search_day_from=01&search_month_from=01&search_year_from={datetime.now().strftime('%Y')}&search_day_to={datetime.now().strftime('%d')}&search_month_to={datetime.now().strftime('%m')}&search_year_to={datetime.now().strftime('%Y')}&search_place=1&search_logic=1&query={keyword}&go.x=6&go.y=4&module=search").text, 'html.parser')
         except: continue
         news = sgzt.find_all('div', {'class': 'article-name'})
         for element in news:
@@ -261,7 +262,7 @@ def parse_sgzt():
 def parse_ecp():
     for keyword in keywords_zel_glazov:
         try:
-            ecp = bs(requests.get(f'{keyword}').text, 'html.parser')
+            ecp = bs(requests.get(f'http://www.ecp.ru/search/node/{keyword}/1/1/1').text, 'html.parser')
         except: continue
         news = ecp.find('div', {'class': 'content'}).find_all('a', href=True)
         for element in news:
@@ -337,6 +338,8 @@ while True:
 
     parsed = list(set(parsed))
 
+    print(parsed)
+
     for element in parsed:
         sql.execute(f'''SELECT * FROM {site_names[element[2]]}''')
         old_parsed = sql.fetchall()
@@ -350,8 +353,8 @@ while True:
     if len(new_news) != 0:
         print(f'\nУникальных новостей: {len(new_news)}')
         
-        ftp_upload()
-        print(f'\n[{datetime.now().strftime("%H:%M:%S")}] [INFO] БД загружена на хостинг!')
+        #ftp_upload()
+        #print(f'\n[{datetime.now().strftime("%H:%M:%S")}] [INFO] БД загружена на хостинг!')
         
         random.shuffle(new_news)
 
