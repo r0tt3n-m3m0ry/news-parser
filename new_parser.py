@@ -74,7 +74,7 @@ def send_parsed_news(element):
                             try:
                                 post_parsed_news_vk(element)
                                 send_message('Новость опубликована в вк!')
-                                print('[{datetime.now().strftime("%H:%M:%S")}] [INFO] Новость опубликована в VK!')
+                                print(f'[{datetime.now().strftime("%H:%M:%S")}] [INFO] Новость опубликована в VK!')
                             except:
                                 send_message('[ОШИБКА] Новость не была опубликована в VK. Работа программы продолжается.')
                             try:
