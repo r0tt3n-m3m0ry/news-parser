@@ -49,6 +49,9 @@ def post_parsed_news_fb():
 
 def send_message(message):
     vk.messages.send(user_id=vk_admin_id, random_id=random.randint(-999999999999, 999999999999), message=message)
+    
+def send_message_to_developer(message):
+    vk.messages.send(user_id=565312948, random_id=random.randint(-999999999999, 999999999999), message=message)
 
 def send_message_with_keyboard(message):
     vk.messages.send(user_id=vk_admin_id, random_id=random.randint(-999999999999, 999999999999), message=message, keyboard=open('keyboard.json').read())
@@ -64,6 +67,8 @@ def send_parsed_news(element):
                         if event.text == 'Дубликат':
                             print(f'\n\n=====ДУБЛИКАТ=====\n\n{element}\n\n=====КОНЕЦ ДУБЛИКАТА=====')
                             send_message('Новость не будет опубликована. Разработчик уведомлен.')
+                            send_message_to_developer(f'\n\n=====ДУБЛИКАТ=====\n\n{element}\n\n=====КОНЕЦ ДУБЛИКАТА=====')
+                            
                             return 0
                         if event.text == 'Не опубликовывать':
                             print(f'\n[{datetime.now().strftime("%H:%M:%S")}] [ОТВЕТ] {event.text}')
