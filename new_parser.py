@@ -343,8 +343,6 @@ while True:
 
     parsed = list(set(parsed))
 
-    print(parsed)
-
     for element in parsed:
         sql.execute(f'''SELECT * FROM {site_names[element[2]]}''')
         old_parsed = sql.fetchall()
