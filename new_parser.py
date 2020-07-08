@@ -22,7 +22,7 @@ site_names = {'Телерадиокомпания Зеленогорск': 'trkz
 
 keywords = ['ядерный', 'атомный', 'твэл', 'росатом', 'атомная станция', 'атомное топливо', 'нейтрино', 'атомный реактор', 'атомный ледокол', 'атомная энергетика', 'ядерная установка', 'ядерные исследования', 'атомные источники тока', 'термоядерный синтез', 'вниинм', 'чмз', 'чепецкий механический завод', 'аэхк', 'ангарский электролизный химический комбинат', 'энергетика']
 
-keywords_new ['ТВЭЛ', 'Росатом', 'наука', 'энергия','Филимонов', 'цирконий', 'уран', 'кальций', 'сверхпроводниковая продукция', 'титан', 'Анищук', 'Россия', 'лето', 'карнавал']
+keywords_new = ['ТВЭЛ', 'Росатом', 'наука', 'энергия','Филимонов', 'цирконий', 'уран', 'кальций', 'сверхпроводниковая продукция', 'титан', 'Анищук', 'Россия', 'лето', 'карнавал']
 
 parsed, new_news = [], []
 
@@ -163,7 +163,7 @@ def parse_vesti():
 def parse_tvel():
     for keyword in keywords:
         try:
-            tvel = bs(requests.get(f'http://tvel.ru/search/index.php?q=keyword}').text, 'html.parser')
+            tvel = bs(requests.get(f'http://tvel.ru/search/index.php?q={keyword}').text, 'html.parser')
         except: continue
         news = tvel.find_all('div', {'class': 'search-list-title'})
         for element in news:
@@ -289,7 +289,7 @@ def parse_ecp():
 def parse_afontovo():
     for keyword in keywords_new:
         try:
-            afontovo = bs(requests.get(f'http://afontovo.ru/search/?q={keyword}').text, 'html.parser')
+            afontovo = bs(requests.get(f'http://afontovo.ru/search/?q={keyword}&spell=1&where=&how=d').text, 'html.parser')
         except: continue
         news = afontovo.find_all('a', {'class': 'article-item__link'}, href=True)
         for element in news:
@@ -341,7 +341,7 @@ def parse_chmz():
 def parse_novouralsknews():
     try:
         novouralsknews = bs(requests.get(f'http://novouralsk-news.ru/').text, 'html.parser')
-    except: continue
+    except: return 0
     news = novouralsknews.find('article', {'class': 'clearfix'}).find_all('h4')
     for element in news:
         title = element.find('a').text.strip()
@@ -393,7 +393,7 @@ def parse_neyvanews():
             parsed.append((title, link, 'Газета "Нейва"'))
 
 # =====Novouralsk_END=====
-
+"""
 # =====Vladimir_START=====
             
 def parse_():
@@ -507,6 +507,7 @@ def parse_():
             parsed.append((title, link, ''))
 
 # =====Vladimir_END=====
+"""
 
 """
 def parse_():
