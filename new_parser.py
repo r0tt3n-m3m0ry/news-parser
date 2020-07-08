@@ -22,7 +22,7 @@ site_names = {'Телерадиокомпания Зеленогорск': 'trkz
 
 keywords = ['ядерный', 'атомный', 'твэл', 'росатом', 'атомная станция', 'атомное топливо', 'нейтрино', 'атомный реактор', 'атомный ледокол', 'атомная энергетика', 'ядерная установка', 'ядерные исследования', 'атомные источники тока', 'термоядерный синтез', 'вниинм', 'чмз', 'чепецкий механический завод', 'аэхк', 'ангарский электролизный химический комбинат', 'энергетика']
 
-keywords_zel_glazov= ['ТВЭЛ', 'Росатом', 'наука', 'энергия','Филимонов', 'цирконий', 'уран', 'кальций', 'сверхпроводниковая продукция', 'титан', 'Анищук', 'Россия', 'лето', 'карнавал']
+keywords_new ['ТВЭЛ', 'Росатом', 'наука', 'энергия','Филимонов', 'цирконий', 'уран', 'кальций', 'сверхпроводниковая продукция', 'титан', 'Анищук', 'Россия', 'лето', 'карнавал']
 
 parsed, new_news = [], []
 
@@ -254,7 +254,7 @@ def parse_electrostal():
 
 # =====Zelenogorsk_START=====
 def parse_trkzelenogorsk():
-    for keyword in keywords_zel_glazov:
+    for keyword in keywords_new:
         try:
             trk = bs(requests.get(f'http://trkzelenogorsk.ru/news/itemlist/search?searchword={keyword}&categories=').text, 'html.parser')
         except: continue
@@ -265,7 +265,7 @@ def parse_trkzelenogorsk():
             parsed.append((title, link, 'Телерадиокомпания Зеленогорск'))
             
 def parse_sgzt():
-    for keyword in keywords_zel_glazov:
+    for keyword in keywords_new:
         try:
             sgzt = bs(requests.get(f"http://sgzt.com/?search_rubric=&search_day_from=01&search_month_from=01&search_year_from={datetime.now().strftime('%Y')}&search_day_to={datetime.now().strftime('%d')}&search_month_to={datetime.now().strftime('%m')}&search_year_to={datetime.now().strftime('%Y')}&search_place=1&search_logic=1&query={keyword}&go.x=6&go.y=4&module=search").text, 'html.parser')
         except: continue
@@ -276,7 +276,7 @@ def parse_sgzt():
             parsed.append((title, link, 'Сегодняшняя газета'))
             
 def parse_ecp():
-    for keyword in keywords_zel_glazov:
+    for keyword in keywords_new:
         try:
             ecp = bs(requests.get(f'http://www.ecp.ru/search/node/{keyword}/1/1/1').text, 'html.parser')
         except: continue
@@ -287,7 +287,7 @@ def parse_ecp():
             parsed.append((title, link, 'ПО "Электрохимический завод"'))
             
 def parse_afontovo():
-    for keyword in keywords_zel_glazov:
+    for keyword in keywords_new:
         try:
             afontovo = bs(requests.get(f'http://afontovo.ru/search/?q={keyword}').text, 'html.parser')
         except: continue
@@ -300,7 +300,7 @@ def parse_afontovo():
         
 # =====Glazov_START=====
 def parse_krznamya():
-    for keyword in keywords_zel_glazov:
+    for keyword in keywords_newv:
         try:
             krznamya = bs(requests.get(f'http://kr-znamya.ru/index.php?searchword={keyword}&ordering=&searchphrase=all&Itemid=63&option=com_search').text, 'html.parser')
         except: continue
@@ -311,7 +311,7 @@ def parse_krznamya():
             parsed.append((title, link, 'Красное знамя'))
 
 def parse_glazovlife():
-    for keyword in keywords_zel_glazov:
+    for keyword in keywords_new:
         try:
             glazovlife = bs(requests.get(f'http://glazovlife.ru/?s={keyword}').text, 'html.parser')
         except: continue
@@ -335,6 +335,191 @@ def parse_chmz():
             parsed.append((title, link, 'ЧМЗ'))
             
 # =====Glazov_END=====
+
+# =====Novouralsk_START=====
+
+def parse_novouralsknews():
+    try:
+        novouralsknews = bs(requests.get(f'http://novouralsk-news.ru/').text, 'html.parser')
+    except: continue
+    news = novouralsknews.find('article', {'class': 'clearfix'}).find_all('h4')
+    for element in news:
+        title = element.find('a').text.strip()
+        link = element.find('a', href=True)['href']
+        parsed.append((title, link, 'Новости Новоуральска'))
+            
+def parse_admngo():
+    for keyword in keywords_new:
+        try:
+            admngo = bs(requests.get(f'http://adm-ngo.ru/search/node/{keyword}').text, 'html.parser')
+        except: continue
+        news = admngo.find_all('h3', {'class': 'title'})
+        for element in news:
+            title = element.find('a').text.strip()
+            link = element.find('a', href=True)['href']
+            parsed.append((title, link, 'Администрация Новоуральского городского округа'))
+            
+def parse_novouralsktv():
+    for keyword in keywords_new:
+        try:
+            novouralsktv = bs(requests.get(f'http://novouralsk.tv/?s={keyword}').text, 'html.parser')
+        except: continue
+        news = novouralsktv.find_all('h2', {'class': 'entry-title'})
+        for element in news:
+            title = element.find('a').text
+            link = element.find('a', href=True)['href']
+            parsed.append((title, link, 'Новоуральская вещательная компания'))
+            
+def parse_nugazeta():
+    for keyword in keywords_new:
+        try:
+            nugazeta = bs(requests.get(f'http://nugazeta.ru/component/search/?searchword={keyword}&searchphrase=all').text, 'html.parser')
+        except: continue
+        news = nugazeta.find_all('dt', {'class': 'result-title'})
+        for element in news:
+            title = element.find('a').text.strip()
+            link = 'http://nugazeta.ru' + element.find('a', href=True)['href']
+            parsed.append((title, link, 'Новоуральская газета'))
+            
+def parse_neyvanews():
+    for keyword in keywords_new:
+        try:
+            neyvanews = bs(requests.get(f'https://neyva-news.ru/component/search/?searchword={keyword}&searchphrase=all').text, 'html.parser')
+        except: continue
+        news = neyvanews.find_all('dt', {'class': 'result-title'})
+        for element in news:
+            title = element.find('a').text.strip()
+            link = element.find('a', href=True)['href']
+            parsed.append((title, link, 'Газета "Нейва"'))
+
+# =====Novouralsk_END=====
+
+# =====Vladimir_START=====
+            
+def parse_():
+    for keyword in keywords_new:
+        try:
+            _ = bs(requests.get(f'{keyword}').text, 'html.parser')
+        except: continue
+        news = _.find()
+        for element in news:
+            title = element.
+            link = element.
+            parsed.append((title, link, ''))
+            
+def parse_():
+    for keyword in keywords_new:
+        try:
+            _ = bs(requests.get(f'{keyword}').text, 'html.parser')
+        except: continue
+        news = _.find()
+        for element in news:
+            title = element.
+            link = element.
+            parsed.append((title, link, ''))
+            
+def parse_():
+    for keyword in keywords_new:
+        try:
+            _ = bs(requests.get(f'{keyword}').text, 'html.parser')
+        except: continue
+        news = _.find()
+        for element in news:
+            title = element.
+            link = element.
+            parsed.append((title, link, ''))
+            
+def parse_():
+    for keyword in keywords_new:
+        try:
+            _ = bs(requests.get(f'{keyword}').text, 'html.parser')
+        except: continue
+        news = _.find()
+        for element in news:
+            title = element.
+            link = element.
+            parsed.append((title, link, ''))
+
+def parse_():
+    for keyword in keywords_new:
+        try:
+            _ = bs(requests.get(f'{keyword}').text, 'html.parser')
+        except: continue
+        news = _.find()
+        for element in news:
+            title = element.
+            link = element.
+            parsed.append((title, link, ''))
+            
+def parse_():
+    for keyword in keywords_new:
+        try:
+            _ = bs(requests.get(f'{keyword}').text, 'html.parser')
+        except: continue
+        news = _.find()
+        for element in news:
+            title = element.
+            link = element.
+            parsed.append((title, link, ''))
+            
+def parse_():
+    for keyword in keywords_new:
+        try:
+            _ = bs(requests.get(f'{keyword}').text, 'html.parser')
+        except: continue
+        news = _.find()
+        for element in news:
+            title = element.
+            link = element.
+            parsed.append((title, link, ''))
+            
+def parse_():
+    for keyword in keywords_new:
+        try:
+            _ = bs(requests.get(f'{keyword}').text, 'html.parser')
+        except: continue
+        news = _.find()
+        for element in news:
+            title = element.
+            link = element.
+            parsed.append((title, link, ''))
+            
+def parse_():
+    for keyword in keywords_new:
+        try:
+            _ = bs(requests.get(f'{keyword}').text, 'html.parser')
+        except: continue
+        news = _.find()
+        for element in news:
+            title = element.
+            link = element.
+            parsed.append((title, link, ''))
+            
+def parse_():
+    for keyword in keywords_new:
+        try:
+            _ = bs(requests.get(f'{keyword}').text, 'html.parser')
+        except: continue
+        news = _.find()
+        for element in news:
+            title = element.
+            link = element.
+            parsed.append((title, link, ''))
+
+# =====Vladimir_END=====
+
+"""
+def parse_():
+    for keyword in []:
+        try:
+            _ = bs(requests.get(f'{keyword}').text, 'html.parser')
+        except: continue
+        news = _.find()
+        for element in news:
+            title = element.
+            link = element.
+            parsed.append((title, link, ''))
+"""
 
 while True:
     print(f'\n[{datetime.now().strftime("%H:%M:%S")}] [INFO] Парсинг начался')
