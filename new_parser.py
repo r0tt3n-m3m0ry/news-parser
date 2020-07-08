@@ -313,14 +313,14 @@ def parse_glazovlife():
         except: continue
             
 def parse_chmz():
-    for keyword in keywords_zel_glazov:
+    for keyword in ['%D2%C2%DD%CB', '%F0%EE%F1%E0%F2%EE%EC', '%ED%E0%F3%EA%E0', '%FD%ED%E5%F0%E3%E8%FF','%D4%E8%EB%E8%EC%EE%ED%EE%E2', '%F6%E8%F0%EA%EE%ED%E8%E9', '%F3%F0%E0%ED', '%EA%E0%EB%FC%F6%E8%E9', '%F1%E2%E5%F0%F5%EF%F0%EE%E2%EE%E4%ED%E8%EA%EE%E2%E0%FF+%EF%F0%EE%E4%F3%EA%F6%E8%FF', '%F2%E8%F2%E0%ED', '%C0%ED%E8%F9%F3%EA', '%D0%EE%F1%F1%E8%FF', '%EB%E5%F2%EE', '%EA%E0%F0%ED%E0%E2%E0%EB']: # keywords+zel_glazov in url encode
         try:
-            iz = bs(requests.get(f'http://chmz.net/search/index.php?q={keyword}').text, 'html.parser')
+            iz = bs(requests.get(f'http://chmz.net/search/index.php?q={keyword}&spell=1&where=&how=d').text, 'html.parser')
         except: continue
         news = iz.find_all('a', {'class': 'searchHead'}, href=True)
         for element in news:
             title = element.text.strip()
-            link = element['href']
+            link = 'http://chmz.net' + element['href'].split('&sphrase_id')[0]
             parsed.append((title, link, 'ЧМЗ'))
             
 # =====Glazov_END=====
