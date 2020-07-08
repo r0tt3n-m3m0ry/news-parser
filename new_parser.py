@@ -320,7 +320,7 @@ def parse_chmz():
         news = iz.find_all('a', {'class': 'searchHead'}, href=True)
         for element in news:
             title = element.text.strip()
-            link = 'http://chmz.net' + element['href'].split('&sphrase_id')[0]
+            link = 'http://chmz.net' + element['href']
             parsed.append((title, link, 'ЧМЗ'))
             
 # =====Glazov_END=====
@@ -346,7 +346,10 @@ while True:
     for element in parsed:
         sql.execute(f'''SELECT * FROM {site_names[element[2]]}''')
         old_parsed = sql.fetchall()
-        if element not in old_parsed:
+        old_parsed_titles = []
+        for k in old_parsed:
+            old_parsed_titles.append(k[0])
+        if element[0] not in old_parsed_titles:
             sql.execute(f'''INSERT INTO {site_names[element[2]]} VALUES (?, ?, ?)''', (element[0], element[1], element[2]))
             db.commit()
             new_news.append(element)
