@@ -400,40 +400,39 @@ def parse_neyvanews():
 """
 # =====Vladimir_START=====
             
-def parse_():
+def parse_progorod33():
+    try:
+        progorod33 = bs(requests.get(f'https://progorod33.ru/articles/list').text, 'html.parser')
+    except: continue
+    news = progorod33.find_all('h3', {'class': 'article-list__item-title'})
+    for element in news:
+        title = element.find('a').text.strip()
+        link = 'http://progorod33.ru' + element.find('a', href=True)['href']
+        parsed.append((title, link, 'Портал PROГОРОД'))
+            
+def parse_tvmig():
     for keyword in keywords_new:
         try:
-            _ = bs(requests.get(f'{keyword}').text, 'html.parser')
+            tvmig = bs(requests.get(f'https://www.tv-mig.ru/search/?q={keyword}').text, 'html.parser')
         except: continue
-        news = _.find()
+        news = tvmig.find_all('div', {'class': 'search-item'})
         for element in news:
-            title = element.
-            link = element.
-            parsed.append((title, link, ''))
+            title = element.find('a').text.strip()
+            link = 'http://tv-mig.ru' + element.find('a', href=True)['href']
+            parsed.append((title, link, 'ТВ МИГ'))
             
-def parse_():
+def parse_provladimir():
     for keyword in keywords_new:
         try:
-            _ = bs(requests.get(f'{keyword}').text, 'html.parser')
+            provladimir = bs(requests.get(f'{keyword}').text, 'html.parser')
         except: continue
-        news = _.find()
+        news = provladimir.find_all('h2', {'class': 'post-title'})
         for element in news:
-            title = element.
-            link = element.
-            parsed.append((title, link, ''))
+            title = element.find('a').text.strip()
+            link = element.find('a', href=True)['href']
+            parsed.append((title, link, 'ПроВладимир'))
             
-def parse_():
-    for keyword in keywords_new:
-        try:
-            _ = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = _.find()
-        for element in news:
-            title = element.
-            link = element.
-            parsed.append((title, link, ''))
-            
-def parse_():
+def parse_zebratv():
     for keyword in keywords_new:
         try:
             _ = bs(requests.get(f'{keyword}').text, 'html.parser')
@@ -444,7 +443,7 @@ def parse_():
             link = element.
             parsed.append((title, link, ''))
 
-def parse_():
+def parse_prizyv():
     for keyword in keywords_new:
         try:
             _ = bs(requests.get(f'{keyword}').text, 'html.parser')
@@ -455,7 +454,7 @@ def parse_():
             link = element.
             parsed.append((title, link, ''))
             
-def parse_():
+def parse_6tv():
     for keyword in keywords_new:
         try:
             _ = bs(requests.get(f'{keyword}').text, 'html.parser')
@@ -466,7 +465,7 @@ def parse_():
             link = element.
             parsed.append((title, link, ''))
             
-def parse_():
+def parse_kovrovgorod():
     for keyword in keywords_new:
         try:
             _ = bs(requests.get(f'{keyword}').text, 'html.parser')
@@ -477,7 +476,7 @@ def parse_():
             link = element.
             parsed.append((title, link, ''))
             
-def parse_():
+def parse_nashregion33():
     for keyword in keywords_new:
         try:
             _ = bs(requests.get(f'{keyword}').text, 'html.parser')
@@ -488,18 +487,7 @@ def parse_():
             link = element.
             parsed.append((title, link, ''))
             
-def parse_():
-    for keyword in keywords_new:
-        try:
-            _ = bs(requests.get(f'{keyword}').text, 'html.parser')
-        except: continue
-        news = _.find()
-        for element in news:
-            title = element.
-            link = element.
-            parsed.append((title, link, ''))
-            
-def parse_():
+def parse_vladtv():
     for keyword in keywords_new:
         try:
             _ = bs(requests.get(f'{keyword}').text, 'html.parser')
