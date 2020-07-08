@@ -18,6 +18,8 @@ import os
 delay = 900
 
 # 'РИА': 'ria', 'Известия': 'iz', 'RussiaToday': 'rt', 'BBC': 'bbc', 'Вести': 'vesti', 'ТВЭЛ': 'tvel', 'РБК': 'rbk', 'Коммерсант': 'komm', 
+#  'Новости Новоуральска': 'novouralsknews', 'Администрация Новоуральского городского округа': 'admngo', 'Новоуральская вещательная компания': 'novouralsktv', 'Газета "Нейва"': 'neyvanews', 'Новоуральская газета': 'nugazeta'
+
 site_names = {'Телерадиокомпания Зеленогорск': 'trkzelenogorsk', 'Сегодняшняя газета': 'sgzt', 'ПО "Электрохимический завод"': 'ecp', 'Афонтово': 'afontovo', 'Красное знамя': 'krznamya', 'Glazov Life': 'glazovlife', 'ЧМЗ': 'chmz'}
 
 keywords = ['ядерный', 'атомный', 'твэл', 'росатом', 'атомная станция', 'атомное топливо', 'нейтрино', 'атомный реактор', 'атомный ледокол', 'атомная энергетика', 'ядерная установка', 'ядерные исследования', 'атомные источники тока', 'термоядерный синтез', 'вниинм', 'чмз', 'чепецкий механический завод', 'аэхк', 'ангарский электролизный химический комбинат', 'энергетика']
@@ -300,7 +302,7 @@ def parse_afontovo():
         
 # =====Glazov_START=====
 def parse_krznamya():
-    for keyword in keywords_newv:
+    for keyword in keywords_new:
         try:
             krznamya = bs(requests.get(f'http://kr-znamya.ru/index.php?searchword={keyword}&ordering=&searchphrase=all&Itemid=63&option=com_search').text, 'html.parser')
         except: continue
@@ -342,7 +344,7 @@ def parse_novouralsknews():
     try:
         novouralsknews = bs(requests.get(f'http://novouralsk-news.ru/').text, 'html.parser')
     except: return 0
-    news = novouralsknews.find('article', {'class': 'clearfix'}).find_all('h4')
+    news = novouralsknews.find_all('h4')
     for element in news:
         title = element.find('a').text.strip()
         link = element.find('a', href=True)['href']
@@ -355,9 +357,11 @@ def parse_admngo():
         except: continue
         news = admngo.find_all('h3', {'class': 'title'})
         for element in news:
-            title = element.find('a').text.strip()
-            link = element.find('a', href=True)['href']
-            parsed.append((title, link, 'Администрация Новоуральского городского округа'))
+            try:
+                title = element.find('a').text.strip()
+                link = element.find('a', href=True)['href']
+                parsed.append((title, link, 'Администрация Новоуральского городского округа'))
+            except: continue
             
 def parse_novouralsktv():
     for keyword in keywords_new:
