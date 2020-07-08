@@ -17,7 +17,7 @@ import os
 
 delay = 900
 
-# 'РИА': 'ria', 'Известия': 'iz', 'RussiaToday': 'rt', 'BBC': 'bbc', 'Вести': 'vesti', 'РБК': 'rbk', 'Коммерсант': 'komm', 
+# 'РИА': 'ria', 'Известия': 'iz', 'RussiaToday': 'rt', 'BBC': 'bbc', 'Вести': 'vesti', 'ТВЭЛ': 'tvel', 'РБК': 'rbk', 'Коммерсант': 'komm', 
 site_names = {'Телерадиокомпания Зеленогорск': 'trkzelenogorsk', 'Сегодняшняя газета': 'sgzt', 'ПО "Электрохимический завод"': 'ecp', 'Афонтово': 'afontovo', 'Красное знамя': 'krznamya', 'Glazov Life': 'glazovlife', 'ЧМЗ': 'chmz'}
 
 keywords = ['ядерный', 'атомный', 'твэл', 'росатом', 'атомная станция', 'атомное топливо', 'нейтрино', 'атомный реактор', 'атомный ледокол', 'атомная энергетика', 'ядерная установка', 'ядерные исследования', 'атомные источники тока', 'термоядерный синтез', 'вниинм', 'чмз', 'чепецкий механический завод', 'аэхк', 'ангарский электролизный химический комбинат', 'энергетика']
@@ -159,7 +159,18 @@ def parse_vesti():
             link = 'http://vesti.ru' + element.find('a', href=True)['href']
             if title != '':
                 parsed.append((title, link, 'Вести'))
-            
+        
+def parse_tvel():
+    for keyword in keywords:
+        try:
+            tvel = bs(requests.get(f'http://tvel.ru/search/index.php?q=keyword}').text, 'html.parser')
+        except: continue
+        news = tvel.find_all('div', {'class': 'search-list-title'})
+        for element in news:
+            title = element.text.strip()
+            link = 'http://tvel.ru' + element.find('a', href=True)['href']
+            parsed.append((title, link, 'ТВЭЛ'))
+        
 def parse_rbk():
     for keyword in keywords:
         try:
@@ -348,8 +359,8 @@ while True:
         old_parsed = sql.fetchall()
         old_parsed_titles = []
         for k in old_parsed:
-            old_parsed_titles.append(k[0])
-        if element[0] not in old_parsed_titles:
+            old_parsed_titles.append(k[0].lower())
+        if element[0].lower() not in old_parsed_titles:
             sql.execute(f'''INSERT INTO {site_names[element[2]]} VALUES (?, ?, ?)''', (element[0], element[1], element[2]))
             db.commit()
             new_news.append(element)
